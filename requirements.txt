@@ -1,0 +1,26 @@
+# Core ML Libraries
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+ultralytics # for YOLOv8
+
+# Web Framework
+streamlit>=1.22.0
+
+# Image Processing
+Pillow>=9.5.0
+opencv-python-headless>=4.7.0
+numpy>=1.23.5
+
+# Data Handling
+pandas>=1.5.3
+scikit-learn>=1.2.2
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+tqdm>=4.65.0
+
+# Optional but recommended
+matplotlib>=3.7.1
+seaborn>=0.12.2  # for visualizations
