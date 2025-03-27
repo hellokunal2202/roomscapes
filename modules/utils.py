@@ -8,6 +8,10 @@ from tensorflow.keras.applications.resnet50 import preprocess_input
 from sklearn.neighbors import NearestNeighbors
 from numpy.linalg import norm
 
+from colorthief import ColorThief
+import webcolors
+import io
+
 from .config import PATHS
 
 def save_uploaded_file(uploaded_file):
@@ -50,3 +54,30 @@ def get_recommended_objects(detected_img):
         return set().union(*options)
     except Exception as e:
         raise RuntimeError(f"Object recommendation error: {e}")
+
+
+
+def get_dominant_colors(image_path, num_colors=4):
+    """
+    Extract dominant colors from an image
+    Returns: List of hex color codes
+    """
+    try:
+        # Use ColorThief to get dominant colors
+        color_thief = ColorThief(image_path)
+        palette = color_thief.get_palette(color_count=num_colors, quality=1)
+        
+        # Convert RGB to hex
+        hex_colors = []
+        for color in palette:
+            try:
+                hex_colors.append(webcolors.rgb_to_hex(color))
+            except:
+                # Handle potential color space issues
+                hex_colors.append(f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}")
+        
+        return hex_colors[:num_colors]  # Ensure we return exactly num_colors
+    
+    except Exception as e:
+        print(f"Error extracting colors: {e}")
+        return ["#FFFFFF", "#CCCCCC", "#999999", "#666666"]  # Default fallback colors

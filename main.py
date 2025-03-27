@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 
 from modules import components, models, utils
+from modules.utils import get_dominant_colors
 from modules.config import PATHS
 
 # Initialize session state
@@ -96,7 +97,38 @@ def reset_detection_state():
     st.session_state.detected_results = None
     st.session_state.result_image = None
 
-# Image processing
+# # Image processing
+# def display_image_columns(yolo_model):
+#     with st.container():
+#         st.markdown("""
+#         <div class="animated-section">
+#             <div class="card">
+#                 <h3 style="margin-top: 0; color: #e0e0ff;">Your Space Unveiled</h3>
+#         """, unsafe_allow_html=True)
+        
+#         col_img1, col_img2 = st.columns(2)
+#         with col_img1:
+#             st.image(
+#                 Image.open(st.session_state.uploaded_file_path),
+#                 caption="Original Dimension",
+#                 use_column_width=True,
+#                 output_format="PNG"
+#             )
+        
+#         if st.session_state.detected_results is None:
+#             process_object_detection(yolo_model)
+        
+#         with col_img2:
+#             st.image(
+#                 st.session_state.result_image,
+#                 caption="AI Vision",
+#                 use_column_width=True,
+#                 output_format="PNG"
+#             )
+        
+#         st.markdown("</div></div>", unsafe_allow_html=True)
+
+# Modify your display_image_columns function
 def display_image_columns(yolo_model):
     with st.container():
         st.markdown("""
@@ -113,6 +145,19 @@ def display_image_columns(yolo_model):
                 use_column_width=True,
                 output_format="PNG"
             )
+            
+            # Add color palette display
+            if st.session_state.uploaded_file_path:
+                colors = get_dominant_colors(st.session_state.uploaded_file_path)
+                st.markdown("### Dominant Colors")
+                cols = st.columns(len(colors))
+                for i, color in enumerate(colors):
+                    with cols[i]:
+                        st.markdown(
+                            f'<div style="background-color:{color}; height:50px; border-radius:10px;"></div>',
+                            unsafe_allow_html=True
+                        )
+                        st.caption(color)
         
         if st.session_state.detected_results is None:
             process_object_detection(yolo_model)
@@ -235,3 +280,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

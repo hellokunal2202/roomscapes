@@ -77,6 +77,21 @@ def inject_css():
         justify-content: center;
         align-items: center;
     }
+        .color-swatch {
+        border-radius: 10px;
+        height: 50px;
+        margin: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+    }
+    .color-swatch:hover {
+        transform: scale(1.05);
+    }
+    .color-palette {
+        display: flex;
+        justify-content: space-between;
+        margin: 15px 0;
+    }
     </style>
     """, unsafe_allow_html=True)
 
