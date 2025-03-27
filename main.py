@@ -12,6 +12,7 @@ from modules.config import PATHS
 def init_session():
     session_defaults = {
         "sidebar_expanded": "collapsed",
+        "budget": 1000,
         "detected_objects": set(),
         "recommended_objects": set(),
         "selected_items": [],
@@ -36,13 +37,13 @@ def render_sidebar_controls():
         </div>
         """, unsafe_allow_html=True)
         
-        st.number_input(
+        st.session_state.budget = st.number_input(
             "💰 Budget (INR)",
             min_value=1000,
             step=500,
-            value=1000,
-            key="budget"
+            value=st.session_state.budget,
         )
+
         
         all_items = st.session_state.detected_objects.union(st.session_state.recommended_objects)
         selected_items = st.multiselect(
@@ -55,9 +56,15 @@ def render_sidebar_controls():
         if st.button("🌟 Generate Shopping List"):
             if selected_items:
                 st.session_state.selected_items = selected_items
+                # Store dominant colors in session state
+                if st.session_state.uploaded_file_path:
+                    st.session_state.dominant_colors = get_dominant_colors(
+                        st.session_state.uploaded_file_path
+                    )
                 st.switch_page("pages/Recommend_products.py")
             else:
                 st.error("✨ Select elements to transform!")
+
 
 # Landing page
 def render_landing():
