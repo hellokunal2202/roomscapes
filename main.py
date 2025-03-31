@@ -12,7 +12,7 @@ from modules.config import PATHS
 def init_session():
     session_defaults = {
         "sidebar_expanded": "collapsed",
-        "budget": 1000,
+        "budget": 5000,
         "detected_objects": set(),
         "recommended_objects": set(),
         "selected_items": [],
@@ -36,35 +36,57 @@ def render_sidebar_controls():
             <h3 style="text-align:center;">Design Controls</h3>
         </div>
         """, unsafe_allow_html=True)
-        
+
         st.session_state.budget = st.number_input(
             "💰 Budget (INR)",
-            min_value=1000,
+            min_value=5000,
             step=500,
             value=st.session_state.budget,
         )
 
-        
+        # Define mapping between UI names and internal names
+        item_mapping = {
+            "Sofa": "sofa",
+            "Curtains": "curtains",
+            "Wooden Floor": "wooden-floor",
+            "Nightstand": "floor-lamps",
+            "Painting": "painting",
+            "Cabinet": "cabinet",
+            "Frame": "frame",
+            "Table": "center-table",
+            "Chair": "chair-wooden",
+        }
+
+        # Ensure detected and recommended objects are sets
         all_items = st.session_state.detected_objects.union(st.session_state.recommended_objects)
+
+        # Filter selected_items to only include valid options
+        valid_selected_items = [item for item in st.session_state.selected_items if item in all_items]
+
+        # Update session state to prevent invalid defaults
+        st.session_state.selected_items = valid_selected_items
+
         selected_items = st.multiselect(
             "🛠️ Redesign Elements",
             options=sorted(all_items),
-            default=st.session_state.selected_items,
+            default=valid_selected_items,  # Ensures all defaults exist in options
             key="items"
         )
-        
+
         if st.button("🌟 Generate Shopping List"):
             if selected_items:
-                st.session_state.selected_items = selected_items
+                # Map UI names to internal names
+                st.session_state.selected_items = [item_mapping.get(item, item) for item in selected_items]
+
                 # Store dominant colors in session state
                 if st.session_state.uploaded_file_path:
                     st.session_state.dominant_colors = get_dominant_colors(
                         st.session_state.uploaded_file_path
                     )
-                st.switch_page("pages/Recommend_products.py")
+
+                st.switch_page("pages/user_preference.py")
             else:
                 st.error("✨ Select elements to transform!")
-
 
 # Landing page
 def render_landing():
@@ -287,4 +309,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
