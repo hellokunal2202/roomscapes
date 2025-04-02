@@ -113,11 +113,7 @@ def group_colors_by_family(color_list):
 # Example usage with expanded color list
 if __name__ == "__main__":
     sample_colors = [
-        "#28292d", "#575b41", "#a5bec1", "#3b3c3d", "#54583d",
-        "#888688", "#b6b3ab", "#888687", "#af9e91", "#b5b2ab",
-        "#b2aba1", "#4f5339", "#7f8082", "#9cb5b7", "#eeeef5",
-        "#343537", "#aaa69d", "#a8a197", "#c5b5a6", "#b7bab0",
-        "#fffdd0", "#fdfd96", "#ffb347", "#779ecb", "#966fd6"
+        "#a9978e", "#211e18" , "#5a3f2c" , "#75502f"
     ]
     
     grouped = group_colors_by_family(sample_colors)
