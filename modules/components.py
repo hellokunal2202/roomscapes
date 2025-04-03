@@ -77,7 +77,7 @@ def inject_css():
         justify-content: center;
         align-items: center;
     }
-        .color-swatch {
+    .color-swatch {
         border-radius: 10px;
         height: 50px;
         margin: 5px;
@@ -92,6 +92,7 @@ def inject_css():
         justify-content: space-between;
         margin: 15px 0;
     }
+
     </style>
     """, unsafe_allow_html=True)
 
