@@ -7,8 +7,7 @@ from PIL import Image
 from modules import components, models, utils
 from modules.utils import get_dominant_colors
 from modules.config import PATHS
-# --- ADD THIS IMPORT ---
-from modules.color_util import categorize_color_family # Import the conversion function
+from modules.color_util import categorize_color_family
 
 # Initialize session state
 def init_session():
@@ -47,12 +46,11 @@ def render_sidebar_controls():
             value=st.session_state.budget,
         )
 
-        # Define mapping between UI names and internal names
         item_mapping = {
             "Sofa": "sofa",
             "Curtains": "curtains",
             "Wooden Floor": "wooden-floor",
-            "Nightstand": "floor-lamps", # Note: Mapped Nightstand to floor-lamps? Verify if correct.
+            "Nightstand": "floor-lamps",
             "Painting": "painting",
             "Cabinet": "cabinet",
             "Frame": "frame",
@@ -60,23 +58,19 @@ def render_sidebar_controls():
             "Chair": "chair-wooden",
         }
 
-        # Ensure detected and recommended objects are sets
         all_items = st.session_state.detected_objects.union(st.session_state.recommended_objects)
 
-        # Filter selected_items to only include valid options
         valid_selected_items = [item for item in st.session_state.selected_items if item in all_items]
 
-        # Update session state to prevent invalid defaults - Use UI names for multiselect
-        # Map internal names back to UI names for default selection display
         reverse_item_mapping = {v: k for k, v in item_mapping.items()}
         display_selected_items = [reverse_item_mapping.get(item, item) for item in valid_selected_items if reverse_item_mapping.get(item, item) in all_items]
 
 
         selected_items_display = st.multiselect(
             "🛠️ Redesign Elements",
-            options=sorted(all_items), # Show UI names if available, else internal names
-            default=display_selected_items, # Default with UI names
-            key="items_display" # Use a different key for the display widget
+            options=sorted(all_items), 
+            default=display_selected_items,
+            key="items_display" 
         )
 
         if st.button("🌟 Generate Shopping List"):
@@ -84,7 +78,6 @@ def render_sidebar_controls():
                 # Map selected UI names back to internal names for storing
                 st.session_state.selected_items = [item_mapping.get(item, item) for item in selected_items_display]
 
-                # --- MODIFIED SECTION for DOMINANT COLORS ---
                 if st.session_state.uploaded_file_path:
                     hex_colors = get_dominant_colors(
                         st.session_state.uploaded_file_path
@@ -109,8 +102,7 @@ def render_landing():
 
 # File upload handling
 def handle_file_upload():
-    # Center the file uploader using columns
-    col1, col2, col3 = st.columns([1, 2, 1]) # Adjust ratio as needed
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         uploaded_file = st.file_uploader(
             "Upload Room Image",
@@ -119,17 +111,11 @@ def handle_file_upload():
             label_visibility="collapsed"
         )
     if uploaded_file:
-        # Process only if it's a new file or no file was previously processed
         if uploaded_file != st.session_state.last_uploaded_file:
              process_new_upload(uploaded_file)
-        # elif st.session_state.uploaded_file_path is None: # Handle case where upload happens before landing page interaction maybe?
-        #      process_new_upload(uploaded_file)
 
 
 def process_new_upload(uploaded_file):
-    # Check if the uploaded file is different from the last processed one
-    # This prevents reprocessing on every rerun if the same file widget value persists
-    # if uploaded_file and (st.session_state.last_uploaded_file is None or uploaded_file.id != st.session_state.last_uploaded_file.id):
     with st.spinner("🌌 Powering Up the Design Matrix..."):
         try:
             file_path = utils.save_uploaded_file(uploaded_file)
@@ -152,7 +138,6 @@ def reset_detection_state():
     st.session_state.dominant_colors = []
     st.session_state.detected_results = None
     st.session_state.result_image = None
-    # Do NOT reset last_uploaded_file here
 
 # Modify your display_image_columns function
 def display_image_columns(yolo_model):
@@ -172,19 +157,15 @@ def display_image_columns(yolo_model):
                 output_format="PNG"
             )
 
-            # --- THIS SECTION REMAINS UNCHANGED ---
-            # It fetches hex codes directly for display purposes
             if st.session_state.uploaded_file_path:
                 try:
-                    # Get hex colors specifically for display
                     hex_colors_display = get_dominant_colors(st.session_state.uploaded_file_path)
                     if hex_colors_display:
                          st.markdown("<h6>Dominant Colors</h6>", unsafe_allow_html=True)
-                         # Dynamically adjust column count based on number of colors (max 5-6 recommended for UI)
                          num_colors = len(hex_colors_display)
-                         cols = st.columns(min(num_colors, 6)) # Limit columns for better UI
+                         cols = st.columns(min(num_colors, 6)) 
                          for i, color in enumerate(hex_colors_display):
-                             if i < len(cols): # Ensure we don't exceed number of columns
+                             if i < len(cols):
                                  with cols[i]:
                                     st.markdown(
                                             f'<div style="background-color:{color}; height:50px; border-radius:10px;"></div>',
@@ -194,14 +175,11 @@ def display_image_columns(yolo_model):
                         st.caption("Could not extract dominant colors.")
                 except Exception as e:
                      st.error(f"Error extracting colors: {e}")
-            # --- END OF UNCHANGED SECTION ---
 
-        # Run detection only if results aren't already stored for the current image
         if st.session_state.detected_results is None:
              process_object_detection(yolo_model)
 
         with col_img2:
-             # Ensure result image exists before trying to display
             if st.session_state.result_image:
                 st.image(
                     st.session_state.result_image,
@@ -210,7 +188,6 @@ def display_image_columns(yolo_model):
                     output_format="PNG"
                 )
             else:
-                 # Maybe show a placeholder or a message if detection hasn't run or failed
                  st.caption("Object detection pending or failed.")
 
 
@@ -224,24 +201,23 @@ def process_object_detection(yolo_model):
                 st.session_state.uploaded_file_path,
                 yolo_model
             )
-            st.session_state.detected_results = results # Store raw results
-            img_with_boxes = results.plot() # Generate image with boxes
+            st.session_state.detected_results = results 
+            img_with_boxes = results.plot() 
             # Convert numpy array (BGR) from OpenCV to RGB for PIL/Streamlit
             img_rgb = img_with_boxes[..., ::-1]
             st.session_state.result_image = Image.fromarray(img_rgb) # Store PIL image
 
             detected_objects = set()
-            object_display_mapping = { # Map internal class names to user-friendly names for display
+            object_display_mapping = { 
                 "sofa": "Sofa",
                 "curtains": "Curtains",
                 "wooden-floor": "Wooden Floor",
-                "floor-lamps": "Nightstand", # Adjust if mapping is different
+                "floor-lamps": "Nightstand", 
                 "painting": "Painting",
                 "cabinet": "Cabinet",
                 "frame": "Frame",
                 "center-table": "Table",
-                "chair-wooden": "Chair",
-                 # Add other mappings as needed
+                "chair-wooden": "Chair"
             }
 
             if results.boxes:
@@ -255,7 +231,7 @@ def process_object_detection(yolo_model):
 
         except Exception as e:
              st.error(f"Object detection failed: {e}")
-             st.session_state.detected_results = None # Ensure reset on failure
+             st.session_state.detected_results = None
              st.session_state.result_image = None
 
 # Recommendations
@@ -276,28 +252,16 @@ def handle_recommendations(resnet_model, feature_list, filenames):
                         indices = utils.recommend(features, feature_list)
                         # Get base filenames for session state
                         recommended_filenames = [os.path.basename(filenames[i]) for i in indices][:5] # Get top 5 filenames
-                        st.session_state.detected_image = recommended_filenames # Store just the filenames
-
-                        # Get recommended objects (assuming this logic exists and works)
-                        # Make sure get_recommended_objects expects filenames or full paths
-                        # If it expects full paths, construct them:
-                        # recommended_fullpaths = [filenames[i] for i in indices][:5]
-                        # st.session_state.recommended_objects = utils.get_recommended_objects(recommended_fullpaths)
-
-                        # For now, assuming it works with filenames or you adjust get_recommended_objects
+                        st.session_state.detected_image = recommended_filenames 
                         st.session_state.recommended_objects = utils.get_recommended_objects(recommended_filenames)
-
-                        # Don't reset selected_items here, let user decide in sidebar
-                        # st.session_state.selected_items = []
-                        st.rerun() # Rerun to display recommendations
+                        st.rerun() 
                     else:
                          st.warning("Could not extract features from the image.")
                 except Exception as e:
                     st.error(f"Failed to get recommendations: {str(e)}")
 
-    # Display recommendations if they exist in session state
     if st.session_state.detected_image:
-        display_recommendations(filenames) # Pass the full list of filenames for lookup
+        display_recommendations(filenames) 
 
 
 def display_recommendations(filenames):
@@ -363,11 +327,9 @@ def main():
         initial_sidebar_state=st.session_state.sidebar_expanded
     )
 
-    components.inject_css() # Assuming this injects necessary CSS
-    components.render_header() # Assuming this renders a standard header
+    components.inject_css()
+    components.render_header()
 
-    # Load models (consider caching these)
-    # @st.cache_resource # Use Streamlit's caching for models
     def load_models_and_features():
         yolo_model = models.load_yolo()
         resnet_model = models.load_resnet()

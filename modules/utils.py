@@ -63,7 +63,6 @@ def get_dominant_colors(image_path, num_colors=4):
     Returns: List of hex color codes
     """
     try:
-        # Use ColorThief to get dominant colors
         color_thief = ColorThief(image_path)
         palette = color_thief.get_palette(color_count=num_colors, quality=1)
         
@@ -73,11 +72,25 @@ def get_dominant_colors(image_path, num_colors=4):
             try:
                 hex_colors.append(webcolors.rgb_to_hex(color))
             except:
-                # Handle potential color space issues
                 hex_colors.append(f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}")
         
-        return hex_colors[:num_colors]  # Ensure we return exactly num_colors
+        return hex_colors[:num_colors] 
     
     except Exception as e:
         print(f"Error extracting colors: {e}")
-        return ["#FFFFFF", "#CCCCCC", "#999999", "#666666"]  # Default fallback colors
+        return ["#FFFFFF", "#CCCCCC", "#999999", "#666666"] 
+
+
+def load_product_data(csv_path):
+    df = pd.read_csv(csv_path)
+    required = ['product_category', 'color']
+    if not all(col in df.columns for col in required):
+        missing = [col for col in required if col not in df.columns]
+        st.error(f"❌ Missing required columns: {', '.join(missing)}")
+        st.stop()
+    df.dropna(subset=['product_category', 'color'], inplace=True)
+    df['color'] = df['color'].astype(str).str.strip()
+    df['product_category'] = df['product_category'].astype(str).str.strip()
+    df = df[df['product_category'] != '']
+    df = df[df['color'] != '']
+    return df.drop_duplicates()

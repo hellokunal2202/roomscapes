@@ -1,4 +1,3 @@
-# Description: This file contains the components for the Streamlit app.
 import streamlit as st
 
 def inject_css():
@@ -103,3 +102,66 @@ def render_header():
         <p class="subtitle">Redesign Your World with Futuristic Flair</p>
     </div>
     """, unsafe_allow_html=True)
+
+import streamlit as st
+
+def render_css_user_pref():
+    st.markdown("""
+    <style>
+    .main { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #ffffff; }
+    .stButton>button:not([kind="secondary"]) {
+        border-radius: 8px !important;
+        background: #7b00ff !important;
+        color: white !important;
+        transition: all 0.3s ease !important;
+        margin-top: 0.5rem !important;
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem !important;
+        font-weight: bold !important;
+        border: none !important;
+        line-height: 1.5 !important;
+        min-height: 48px !important;
+    }
+    .stButton>button:not([kind="secondary"]):hover {
+        background: #9d4edd !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(123, 0, 255, 0.4) !important;
+    }
+    .stButton>button:not([kind="secondary"]):focus {
+        box-shadow: 0 0 0 3px rgba(123, 0, 255, 0.5) !important;
+        outline: none !important;
+    }
+    .glow-card { 
+        background: rgba(255, 255, 255, 0.1); 
+        border-radius: 15px; 
+        padding: 25px; 
+        margin: 15px 0; 
+        border: 1px solid rgba(255, 255, 255, 0.2); 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+        backdrop-filter: blur(10px); 
+        transition: all 0.3s ease; 
+    }
+    .glow-card:hover { box-shadow: 0 6px 20px rgba(123, 0, 255, 0.3); }
+    .section-title { font-size: 24px; font-weight: 700; color: #e0e0ff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    .stMultiSelect [data-baseweb="tag"] { background-color: #7b00ff; }
+    button[kind="secondary"] {
+        background-color: #ff4b4b !important;
+        color: white !important;
+        border-radius: 5px !important;
+        padding: 2px 8px !important;
+        margin-left: 10px !important;
+        font-size: 12px !important;
+        min-height: 24px !important;
+        line-height: 1.2 !important;
+        border: none !important;
+        box-shadow: none !important;
+        vertical-align: middle;
+    }
+    button[kind="secondary"]:hover { background-color: #cc0000 !important; }
+    .stInfo { vertical-align: middle; display: inline-block; }
+    </style>
+    """, unsafe_allow_html=True)
+
+def render_title_user_pref():
+    st.title("🎨 Customize Your Design Plan")
+    st.markdown("Let's fine-tune your preferences for a perfect design.")

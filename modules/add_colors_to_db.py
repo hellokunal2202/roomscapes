@@ -4,7 +4,6 @@ from io import BytesIO
 from colorthief import ColorThief
 import traceback
 
-# ---------- Step 1: Connect to DB ----------
 print("🔄 Connecting to MySQL database...")
 
 try:
@@ -22,12 +21,11 @@ except Exception as e:
 
 cursor = db.cursor()
 
-# ---------- Step 2: Get Products ----------
 cursor.execute("SELECT id, image_url FROM products;")
 products = cursor.fetchall()
 print(f"✅ Found {len(products)} products.")
 
-# ---------- Step 3: Get Colors Function ----------
+
 def get_dominant_colors(image_url, num_colors=3):
     try:
         response = requests.get(image_url)
@@ -44,7 +42,7 @@ def get_dominant_colors(image_url, num_colors=3):
         print(f"❌ Error fetching {image_url}: {e}")
         return [None] * num_colors
 
-# ---------- Step 4: Process Products ----------
+
 for prod in products:
     prod_id, image_url = prod
     print(f"\n🔄 Processing Product ID {prod_id}")
@@ -65,7 +63,6 @@ for prod in products:
     else:
         print(f"⚠️ Skipped product {prod_id} due to missing or invalid colors.")
 
-# ---------- Step 5: Commit and Close ----------
 try:
     db.commit()
     print("💾 All changes committed to database.")
