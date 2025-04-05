@@ -100,7 +100,6 @@ def categorize_color_family(hex_code):
     return "Other"  # Fallback (minimized with broader categories)
 
 def group_colors_by_family(color_list):
-    """Group colors into categorized dictionary with error handling."""
     families = {}
     for color in color_list:
         try:
@@ -110,15 +109,26 @@ def group_colors_by_family(color_list):
         families.setdefault(family, []).append(color)
     return families
 
-# Example usage with expanded color list
-if __name__ == "__main__":
-    sample_colors = [
-        "#a9978e", "#211e18" , "#5a3f2c" , "#75502f"
-    ]
+# Example usage
+# if __name__ == "__main__":
+#     sample_colors = [
+#         "#a9978e", "#211e18" , "#5a3f2c" , "#75502f"
+#     ]
     
-    grouped = group_colors_by_family(sample_colors)
+#     grouped = group_colors_by_family(sample_colors)
     
-    print("Color Family Analysis:")
-    for family in sorted(grouped.keys()):
-        print(f"\n{family} ({len(grouped[family])}):")
-        print('\n'.join(f"  {c}" for c in grouped[family]))
+#     print("Color Family Analysis:")
+#     for family in sorted(grouped.keys()):
+#         print(f"\n{family} ({len(grouped[family])}):")
+#         print('\n'.join(f"  {c}" for c in grouped[family]))
+
+
+# for user_preference.py
+def extract_category_colors(df):
+    cat_colors = {}
+    grouped = df.groupby('product_category')['color'].agg(lambda x: sorted(list(x.dropna().unique()))).to_dict()
+    for category, colors in grouped.items():
+        cleaned = [str(c).strip() for c in colors if str(c).strip()]
+        if cleaned:
+            cat_colors[category] = cleaned
+    return cat_colors
