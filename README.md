@@ -44,4 +44,4 @@ Our system also uses a **genetic algorithm for smart budget allocation**, ensuri
 ```pip install -r requirements.txt``` <br>
 
 #### 4. Run the application <br>
-```streamlit run app.py```
+```streamlit run main.py```
