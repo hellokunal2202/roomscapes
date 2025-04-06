@@ -3,7 +3,29 @@ from modules.utils import load_product_data
 from modules.color_util import extract_category_colors
 from modules.components import render_css_user_pref, render_title_user_pref
 
+
+    # --- Load CSS ---
+    st.markdown("""
+    <style>
+    .main { background: #fffff; color: #0000000; }
+    .stButton>button { border-radius: 8px; background: #7b00ff; color: white; transition: all 0.3s ease; margin-top: 0.5rem; }
+    .stButton>button:hover { background: #9d4edd; transform: translateY(-2px); }
+    .glow-card { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 25px; margin: 15px 0; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); transition: all 0.3s ease; }
+    .glow-card:hover { box-shadow: 0 6px 20px rgba(123, 0, 255, 0.3); }
+    .section-title { font-size: 24px; font-weight: 700; color: #00000; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    .stMultiSelect [data-baseweb="tag"] { background-color: #7b00ff; }
+    button[kind="secondary"] { background-color: #ff4b4b !important; color: white !important; border-radius: 5px; padding: 2px 8px !important; margin-left: 10px; font-size: 12px; min-height: 10px !important; line-height: 1.2; }
+    button[kind="secondary"]:hover { background-color: #cc0000 !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.title(" Customize Your Design Plan")
+    st.markdown("Refine your preferences for the selected room elements.", unsafe_allow_html=True)
+
+    # --- Initialize Session State ---
+
 def initialize_session_state():
+
     if "selected_items" not in st.session_state:
         st.session_state.selected_items = []
     if "color_prefs" not in st.session_state:
@@ -16,21 +38,30 @@ def initialize_session_state():
 def budget_section():
     with st.container():
         st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">💰 Review Your Budget</div>', unsafe_allow_html=True)
-        new_budget = st.slider("Total Budget (₹)", min_value=1000, max_value=200000,
-                               value=st.session_state.budget, step=500, format="₹%d")
+
+        st.markdown('<div class="section-title"> Review Your Budget</div>', unsafe_allow_html=True)
+        min_budget = 1000
+        new_budget = st.slider(
+            "Total Budget (₹)",
+            min_value=min_budget, max_value=200000,
+            value=st.session_state.budget, step=500, format="₹%d"
+        )
+
         st.session_state.budget = new_budget
-        st.markdown(f'<p style="color: #a0a0ff;">Current Total Budget: ₹{st.session_state.budget:,}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #00000;">Current Total Budget: ₹{st.session_state.budget:,}</p>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 def category_selection_section(category_colors):
     all_categories = sorted(list(category_colors.keys()))
     with st.container():
         st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">🪄 Manage Categories</div>', unsafe_allow_html=True)
-        st.markdown("**Add More Categories:**", unsafe_allow_html=True)
-        available = [cat for cat in all_categories if cat not in st.session_state.selected_items]
-        if not available:
+        st.markdown('<div class="section-title"> Manage Categories</div>', unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("**Add More Categories:**")
+        available_to_add = [cat for cat in all_categories_in_csv if cat not in st.session_state.selected_items]
+
+        if not available_to_add:
+
             st.caption("All available categories are selected.")
         else:
             col1, col2 = st.columns([0.8, 0.2])
@@ -66,8 +97,10 @@ def color_preferences_section(category_colors):
     if st.session_state.selected_items:
         with st.container():
             st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">🎨 Pick Your Colors</div>', unsafe_allow_html=True)
-            st.markdown("Select your favorite color families. If no dominant color is set, all options will be chosen by default.")
+
+            st.markdown('<div class="section-title"> Pick Your Colors</div>', unsafe_allow_html=True)
+            st.markdown("Select preferred color families. By default, only your room's dominant colors (if any) are selected. If no dominant color is available for a category, then all colors are selected by default.")
+
             for cat in st.session_state.selected_items:
                 st.markdown(f"--- \n#### {cat}")
                 colors = category_colors.get(cat, [])
@@ -87,6 +120,20 @@ def generate_packages(category_colors, df):
     if st.session_state.selected_items:
         with st.container():
             st.markdown('<div class="glow-card">', unsafe_allow_html=True)
+
+            st.markdown('<div class="section-title"> Generate Packages</div>', unsafe_allow_html=True)
+            st.markdown("When you are satisfied with your category, color selections, and budget, click the button below to generate your design packages.")
+            
+            if st.button("Generate Packages", use_container_width=True):
+                final_package = {"total_budget": st.session_state.budget, "categories": {}}
+
+                for cat in st.session_state.selected_items:
+                    available_set = set(category_colors.get(cat, []))
+                    selected_set = set(st.session_state.color_prefs.get(cat, []))
+                    # If user removed all colors, treat as all available are selected.
+                    if not selected_set:
+                        selected_set = available_set
+
             st.markdown('<div class="section-title">🚀 Generate Packages</div>', unsafe_allow_html=True)
             st.markdown("Once you’re happy with your selections, click below to generate your design packages.")
 
@@ -128,6 +175,7 @@ def generate_packages(category_colors, df):
                     selected = set(st.session_state.get(f"color_family_{cat}", []))
                     if not selected and available:
                         selected = available
+
                         not_selected = set()
                     else:
                         not_selected = available - selected
@@ -161,4 +209,9 @@ def main():
     generate_packages(category_colors, df)
 
 if __name__ == "__main__":
+
     main()
+
+
+
+

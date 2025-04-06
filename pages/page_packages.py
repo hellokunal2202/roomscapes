@@ -25,7 +25,11 @@ products_df = load_products()
 st.markdown("""
 <style>
     body { color: #e5e7eb; }
-    .stApp { background: linear-gradient(135deg, #111827, #1f2937); }
+
+    .stApp { background: #fffff); }
+
+    /* Expander Styling */
+
     .stExpander { border-radius: 15px !important; border: 1px solid #374151 !important; margin-bottom: 25px !important; background: #1f2937 !important; box-shadow: 0 6px 30px rgba(0,0,0,0.2) !important; transition: all 0.3s ease !important; overflow: hidden; }
     .stExpander:hover { transform: translateY(-5px); box-shadow: 0 8px 35px rgba(0,0,0,0.3) !important; border-color: #4b5563 !important; }
     .stExpander header { font-size: 18px !important; font-weight: 600 !important; color: #f9fafb !important; padding-top: 15px !important; padding-bottom: 15px !important; border-radius: 15px 15px 0 0 !important; background-color: transparent !important; border-bottom: 1px solid #374151 !important; }
