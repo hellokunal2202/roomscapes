@@ -62,19 +62,19 @@ def main():
     # --- Load CSS ---
     st.markdown("""
     <style>
-    .main { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #ffffff; }
+    .main { background: #fffff; color: #0000000; }
     .stButton>button { border-radius: 8px; background: #7b00ff; color: white; transition: all 0.3s ease; margin-top: 0.5rem; }
     .stButton>button:hover { background: #9d4edd; transform: translateY(-2px); }
     .glow-card { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 25px; margin: 15px 0; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); transition: all 0.3s ease; }
     .glow-card:hover { box-shadow: 0 6px 20px rgba(123, 0, 255, 0.3); }
-    .section-title { font-size: 24px; font-weight: 700; color: #e0e0ff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    .section-title { font-size: 24px; font-weight: 700; color: #00000; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
     .stMultiSelect [data-baseweb="tag"] { background-color: #7b00ff; }
     button[kind="secondary"] { background-color: #ff4b4b !important; color: white !important; border-radius: 5px; padding: 2px 8px !important; margin-left: 10px; font-size: 12px; min-height: 10px !important; line-height: 1.2; }
     button[kind="secondary"]:hover { background-color: #cc0000 !important; }
     </style>
     """, unsafe_allow_html=True)
 
-    st.title("🎨 Customize Your Design Plan")
+    st.title(" Customize Your Design Plan")
     st.markdown("Refine your preferences for the selected room elements.", unsafe_allow_html=True)
 
     # --- Initialize Session State ---
@@ -91,7 +91,7 @@ def main():
     # --- Handling Budget Section ---
     with st.container():
         st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">💰 Review Your Budget</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title"> Review Your Budget</div>', unsafe_allow_html=True)
         min_budget = 1000
         new_budget = st.slider(
             "Total Budget (₹)",
@@ -99,7 +99,7 @@ def main():
             value=st.session_state.budget, step=500, format="₹%d"
         )
         st.session_state.budget = new_budget
-        st.markdown(f'<p style="color: #a0a0ff;">Current Total Budget: ₹{st.session_state.budget:,}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #00000;">Current Total Budget: ₹{st.session_state.budget:,}</p>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     # --- Load Product Data and Extract Colors ---
@@ -111,7 +111,7 @@ def main():
     # --- Managing Category Selection (Dynamic Add/Remove) ---
     with st.container():
         st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">🪄 Manage Categories</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title"> Manage Categories</div>', unsafe_allow_html=True)
         st.markdown("---")
         st.markdown("**Add More Categories:**")
         available_to_add = [cat for cat in all_categories_in_csv if cat not in st.session_state.selected_items]
@@ -158,7 +158,7 @@ def main():
     if st.session_state.selected_items:
         with st.container():
             st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">🎨 Pick Your Colors</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title"> Pick Your Colors</div>', unsafe_allow_html=True)
             st.markdown("Select preferred color families. By default, only your room's dominant colors (if any) are selected. If no dominant color is available for a category, then all colors are selected by default.")
             for cat in st.session_state.selected_items:
                 st.markdown(f"--- \n#### {cat}")
@@ -194,7 +194,7 @@ def main():
     if st.session_state.selected_items:
         with st.container():
             st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">🚀 Generate Packages</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title"> Generate Packages</div>', unsafe_allow_html=True)
             st.markdown("When you are satisfied with your category, color selections, and budget, click the button below to generate your design packages.")
             
             if st.button("Generate Packages", use_container_width=True):
@@ -224,3 +224,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+

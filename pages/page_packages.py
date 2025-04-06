@@ -44,7 +44,7 @@ st.markdown("""
 <style>
     /* Base Dark Theme */
     body { color: #e5e7eb; }
-    .stApp { background: linear-gradient(135deg, #111827, #1f2937); }
+    .stApp { background: #fffff); }
 
     /* Expander Styling */
     .stExpander { border-radius: 15px !important; border: 1px solid #374151 !important; margin-bottom: 25px !important; background: #1f2937 !important; box-shadow: 0 6px 30px rgba(0,0,0,0.2) !important; transition: all 0.3s ease !important; overflow: hidden; }

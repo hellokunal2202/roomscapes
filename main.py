@@ -41,7 +41,7 @@ def render_sidebar_controls():
         """, unsafe_allow_html=True)
 
         st.session_state.budget = st.number_input(
-            "💰 Budget (INR)",
+            " Budget (INR)",
             min_value=5000,
             step=500,
             value=st.session_state.budget,
@@ -58,6 +58,7 @@ def render_sidebar_controls():
             "Frame": "frame",
             "Table": "center-table",
             "Chair": "chair-wooden",
+            "Carpet":"handmade-carpets"
         }
 
         # Ensure detected and recommended objects are sets
@@ -73,13 +74,13 @@ def render_sidebar_controls():
 
 
         selected_items_display = st.multiselect(
-            "🛠️ Redesign Elements",
+            " Redesign Elements",
             options=sorted(all_items), # Show UI names if available, else internal names
             default=display_selected_items, # Default with UI names
             key="items_display" # Use a different key for the display widget
         )
 
-        if st.button("🌟 Generate Shopping List"):
+        if st.button(" Generate Shopping List"):
             if selected_items_display:
                 # Map selected UI names back to internal names for storing
                 st.session_state.selected_items = [item_mapping.get(item, item) for item in selected_items_display]
@@ -95,14 +96,14 @@ def render_sidebar_controls():
 
                 st.switch_page("pages/user_preference.py")
             else:
-                st.error("✨ Select elements to transform!")
+                st.error(" Select elements to transform!")
 
 # Landing page
 def render_landing():
     # Centering the button with columns
     col1, col2, col3 = st.columns([1,1,1])
     with col2:
-        if st.button("🚀 Let's Go", use_container_width=True):
+        if st.button("Start Room Analysis", use_container_width=True):
             st.session_state.landing_done = True
             st.session_state.sidebar_expanded = "expanded"
             st.rerun()
@@ -160,7 +161,8 @@ def display_image_columns(yolo_model):
         st.markdown("""
         <div class="animated-section">
             <div class="card">
-                <h3 style="margin-top: 0; color: #e0e0ff;">Your Space Unveiled</h3>
+            <p class="heading-orbitron">Your Space Unveiled</p>
+
         """, unsafe_allow_html=True)
 
         col_img1, col_img2 = st.columns(2)
@@ -265,8 +267,8 @@ def handle_recommendations(resnet_model, feature_list, filenames):
     with col2:
          # Disable button if no file is uploaded
         button_disabled = st.session_state.uploaded_file_path is None
-        if st.button("✨ Summon Inspirations", key="find_similar", use_container_width=True, disabled=button_disabled):
-            with st.spinner("🌠 Warping Through Design Space..."):
+        if st.button("View Top Similar Rooms", key="find_similar", use_container_width=True, disabled=button_disabled):
+            with st.spinner(" Warping Through Design Space..."):
                 try:
                     features = utils.feature_extraction(
                         st.session_state.uploaded_file_path,
@@ -305,7 +307,7 @@ def display_recommendations(filenames):
         st.markdown("""
         <div class="animated-section">
             <div class="card">
-                <h3 style="color: #e0e0ff;">✨ Cosmic Inspirations</h3>
+                <p class="heading-orbitron "> Cosmic Inspirations</h3>
         """, unsafe_allow_html=True)
 
         # Ensure detected_image has content
@@ -359,7 +361,6 @@ def main():
     st.set_page_config(
         page_title="RoomScapes AI",
         layout="wide",
-        page_icon="✨",
         initial_sidebar_state=st.session_state.sidebar_expanded
     )
 
