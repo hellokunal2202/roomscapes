@@ -80,6 +80,7 @@ def render_sidebar_controls():
             "Curtains": "curtains",
             "Wooden Floor": "wooden-floor",
             "Nightstand": "floor-lamps",
+            "Lamp": "floor-lamps",
             "Painting": "painting",
             "Cabinet": "cabinet",
             "Frame": "frame",
@@ -235,7 +236,8 @@ def process_object_detection(yolo_model):
                 "cabinet": "Cabinet",
                 "frame": "Frame",
                 "center-table": "Table",
-                "chair-wooden": "Chair"
+                "chair-wooden": "Chair",
+                "Lamp": "Lamp",
             }
 
             if results.boxes:
