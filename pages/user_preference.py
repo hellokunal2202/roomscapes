@@ -133,6 +133,7 @@ def main():
                         added_set = set(new_categories_to_add)
                         st.session_state.selected_items = list(st.session_state.selected_items) + list(added_set - current_set)
 
+
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("**Currently Selected:**")
