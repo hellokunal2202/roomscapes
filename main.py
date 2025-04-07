@@ -46,6 +46,35 @@ def render_sidebar_controls():
             value=st.session_state.budget,
         )
 
+        # Display detected objects section
+        if st.session_state.detected_objects:
+            st.markdown("##### Identified Categories")
+            st.markdown("<p style='color:#4CAF50;font-size:0.9em;'>Categories detected in your image</p>", unsafe_allow_html=True)
+            detected_items_display = st.multiselect(
+                "Select detected items",
+                options=sorted(st.session_state.detected_objects),
+                default=[item for item in st.session_state.selected_items if item in st.session_state.detected_objects],
+                key="detected_items_display",
+                label_visibility="collapsed"
+            )
+        else:
+            detected_items_display = []
+            
+        # Display recommended objects section
+        if st.session_state.recommended_objects:
+            st.markdown("##### Suggested Categories")
+            st.markdown("<p style='color:#2196F3;font-size:0.9em;'>Categories suggested from similar rooms</p>", unsafe_allow_html=True)
+            recommended_items_display = st.multiselect(
+                "Select recommended items",
+                options=sorted(st.session_state.recommended_objects),
+                default=[item for item in st.session_state.selected_items if item in st.session_state.recommended_objects],
+                key="recommended_items_display",
+                label_visibility="collapsed"
+            )
+        else:
+            recommended_items_display = []
+            
+        # Item mapping dictionary
         item_mapping = {
             "Sofa": "sofa",
             "Curtains": "curtains",
@@ -58,23 +87,9 @@ def render_sidebar_controls():
             "Chair": "chair-wooden",
             "Carpet":"handmade-carpets"
         }
-
-        all_items = st.session_state.detected_objects.union(st.session_state.recommended_objects)
-
-        valid_selected_items = [item for item in st.session_state.selected_items if item in all_items]
-
-        reverse_item_mapping = {v: k for k, v in item_mapping.items()}
-        display_selected_items = [reverse_item_mapping.get(item, item) for item in valid_selected_items if reverse_item_mapping.get(item, item) in all_items]
-
-
-        selected_items_display = st.multiselect(
-
-            " Redesign Elements",
-            options=sorted(all_items), # Show UI names if available, else internal names
-            default=display_selected_items, # Default with UI names
-            key="items_display" # Use a different key for the display widget
-
-        )
+        
+        # Combine selections from both sections
+        selected_items_display = detected_items_display + [item for item in recommended_items_display if item not in detected_items_display]
 
         if st.button(" Generate Shopping List"):
             if selected_items_display:
@@ -88,11 +103,10 @@ def render_sidebar_controls():
                     color_families = list(set(categorize_color_family(hex_code) for hex_code in hex_colors if hex_code))
                     st.session_state.dominant_colors = color_families
 
-
                 st.switch_page("pages/user_preference.py")
             else:
                 st.error(" Select elements to transform!")
-
+# Landing page
 # Landing page
 def render_landing():
     # Centering the button with columns
