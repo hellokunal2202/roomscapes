@@ -81,21 +81,60 @@ st.markdown("""
     }
 
    
-    .product-card {
+   .product-card {
         padding: 15px;
         margin-bottom: 15px;
         background-color: #FFFFFF;
         border: 1px solid #E5D6FF;
         border-radius: 8px;
-        height: 100%;
+        height: 220px; /* Fixed height */
         display: flex;
         flex-direction: column;
         transition: transform 0.2s, box-shadow 0.2s;
         color: #333333;
+        overflow: hidden; /* Hide overflow */
     }
+    
+    .product-content {
+        display: flex;
+        gap: 15px;
+        height: 100%; /* Take full height of card */
+    }
+    
+    .product-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Enable scrolling for overflow */
+    }
+    
+    .product-description {
+        flex: 1;
+        overflow-y: auto; /* Add scroll for long descriptions */
+        margin: 0;
+        font-size: 0.85em;
+        color: #888;
+        font-style: italic;
+        padding-right: 5px; /* Space for scrollbar */
+        max-height: 80px; /* Limit description height */
+    }
+    
     .product-card:hover {
         transform: scale(1.03);
         box-shadow: 0px 5px 15px rgba(118, 75, 162, 0.2);
+    }
+    
+    /* Custom scrollbar for description */
+    .product-description::-webkit-scrollbar {
+        width: 4px;
+    }
+    .product-description::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 2px;
+    }
+    .product-description::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 2px;
     }
     .product-link {
         text-decoration: none !important;
@@ -103,12 +142,7 @@ st.markdown("""
         display: block;
         height: 100%;
     }
-    .product-content {
-        display: flex;
-        gap: 15px;
-        align-items: flex-start;
-        flex-grow: 1;
-    }
+   
     .product-image {
         width: 80px;
         height: 80px;
@@ -276,27 +310,27 @@ for index, row in visible_df.iterrows():
         if not isinstance(img_url, str) or not img_url.startswith(('http://', 'https://')):
             img_url = FALLBACK_IMAGE_URL
 
-        product_content_html = f"""
-        <div class="product-content">
-            <img src="{img_url}" class="product-image" alt="{row.get(name_column, 'Product image')}" />
-            <div class="product-details">
-                <h5>{row.get(name_column, 'N/A')}</h5>
-                <p><b>Category:</b> {row.get(cat_column, 'N/A')}</p>
-                <p><b>Price:</b> ₹{row.get(price_column, 'N/A')}</p>
-                {f'<p><b>Color:</b> {row.get(color_column, "N/A")}</p>' if has_color_column and pd.notna(row.get(color_column)) else ''}
-                <p class="product-description">{row.get(desc_column, '')}</p>
-            </div>
-        </div>
-        """
-        
+        # Build the product card HTML as a single string
         product_html = f"""
         <div class="product-card" key="prod-{index}">
             <a href="{row.get(url_column, '#')}" target="_blank" class="product-link">
-                {product_content_html}
+                <div class="product-content">
+                    <img src="{img_url}" class="product-image" alt="{row.get(name_column, 'Product image')}" />
+                    <div class="product-details">
+                        <h5>{row.get(name_column, 'N/A')}</h5>
+                        <p><b>Category:</b> {row.get(cat_column, 'N/A')}</p>
+                        <p><b>Price:</b> ₹{row.get(price_column, 'N/A')}</p>
+                        {f'<p><b>Color:</b> {row.get(color_column, "N/A")}</p>' if has_color_column and pd.notna(row.get(color_column)) else ''}
+                        <p class="product-description">{row.get(desc_column, '')}</p>
+                    </div>
+                </div>
             </a>
         </div>
         """
+        
+        # Display the complete product card
         st.markdown(product_html, unsafe_allow_html=True)
+        
     col_index += 1
 
 # --- Load More Button ---

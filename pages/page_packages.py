@@ -78,7 +78,7 @@ st.markdown("""
     background-color: transparent !important;
   }
 
-  /* Product card styling */
+  /* Product card styling with fixed height */
   .product-card {
     padding: 20px;
     margin: 10px 0;
@@ -86,12 +86,12 @@ st.markdown("""
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    height: 100%;
+    height: 480px; /* Fixed height for all cards */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     border: 1px solid #dcdfe6;
     animation: fadeIn 0.5s ease-out;
+    overflow: hidden; /* Hide overflow */
   }
 
   .product-card:hover {
@@ -111,10 +111,14 @@ st.markdown("""
     text-decoration: none !important;
   }
 
+  .product-image-container {
+    flex-shrink: 0; /* Prevent image from shrinking */
+  }
+
   .product-image {
     border-radius: 12px;
     width: 100%;
-    height: 250px; /* Increased size */
+    height: 250px;
     object-fit: cover;
     margin-bottom: 15px;
     border: 1px solid #d1d5db;
@@ -125,29 +129,39 @@ st.markdown("""
     transform: scale(1.05);
   }
 
+  .product-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Enable scrolling if needed */
+  }
+
   .price-tag {
     background: linear-gradient(45deg, #6c5ce7, #8a7cff);
     color: white;
     padding: 10px 20px;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 1rem; /* Increased size */
+    font-size: 1rem;
     margin-top: 12px;
     display: inline-block;
     align-self: flex-start;
     box-shadow: 0 2px 10px rgba(108, 92, 231, 0.2);
+    flex-shrink: 0; /* Prevent price tag from shrinking */
   }
 
   .product-description {
-    font-size: 1rem !important; /* Increased size */
+    font-size: 1rem !important;
     color: #555555;
     margin: 12px 0;
     line-height: 1.6;
-    flex-grow: 1;
+    flex: 1;
+    overflow-y: auto; /* Add scroll for long descriptions */
+    padding-right: 5px; /* Space for scrollbar */
   }
 
   .product-category {
-    font-size: 1rem !important; /* Increased size */
+    font-size: 1rem !important;
     color: #777777;
     margin-top: 8px;
     text-transform: capitalize;
@@ -155,8 +169,21 @@ st.markdown("""
 
   .product-title {
     font-weight: 600;
-    font-size: 1.25rem; /* Increased size */
+    font-size: 1.25rem;
     margin-bottom: 8px;
+  }
+
+  /* Custom scrollbar styling */
+  .product-description::-webkit-scrollbar {
+    width: 4px;
+  }
+  .product-description::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  .product-description::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
   }
 
   /* Section titles */
