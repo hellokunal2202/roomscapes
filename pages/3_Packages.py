@@ -497,4 +497,4 @@ else:
     # Footer with browse button
     st.markdown("---")
     if st.button("Browse All Products ➡️", key="browse_all", use_container_width=True):
-        st.switch_page("pages/page_all_products.py")
+        st.switch_page("pages/4_Explore.py")

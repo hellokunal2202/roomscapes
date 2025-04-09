@@ -10,7 +10,7 @@ from modules.utils import get_dominant_colors
 from modules.config import PATHS
 from modules.color_util import categorize_color_family
 
-
+excluded_categories = {"Ceramic floor", "Wooden floor"}
 
 # Custom CSS with animations and modern styling
 def inject_custom_css():
@@ -235,7 +235,7 @@ def render_sidebar_controls():
             st.markdown("<p style='color:#4CAF50;font-size:0.9em;'>Categories detected in your image</p>", unsafe_allow_html=True)
             detected_items_display = st.multiselect(
                 "Select detected items",
-                options=sorted(st.session_state.detected_objects),
+                options=sorted(st.session_state.detected_objects - excluded_categories),
                 default=[item for item in st.session_state.selected_items if item in st.session_state.detected_objects],
                 key="detected_items_display",
                 label_visibility="collapsed"
@@ -249,14 +249,14 @@ def render_sidebar_controls():
             st.markdown("<p style='color:#2196F3;font-size:0.9em;'>Categories suggested from similar rooms</p>", unsafe_allow_html=True)
             recommended_items_display = st.multiselect(
                 "Select recommended items",
-                options=sorted(st.session_state.recommended_objects),
+                options=sorted(st.session_state.recommended_objects - excluded_categories),
                 default=[item for item in st.session_state.selected_items if item in st.session_state.recommended_objects],
                 key="recommended_items_display",
                 label_visibility="collapsed"
             )
         else:
             recommended_items_display = []
-            
+                
         # Item mapping dictionary
         item_mapping = {
             "Sofa": "sofa",
@@ -287,7 +287,7 @@ def render_sidebar_controls():
                     color_families = list(set(categorize_color_family(hex_code) for hex_code in hex_colors if hex_code))
                     st.session_state.dominant_colors = color_families
 
-                st.switch_page("pages/user_preference.py")
+                st.switch_page("pages/2_Preferences.py")
             else:
                 st.error(" Select elements to transform!")
                 
@@ -507,7 +507,11 @@ def process_main_flow(yolo_model, resnet_model, feature_list, filenames):
     handle_file_upload()
     if st.session_state.uploaded_file_path:
         display_image_columns(yolo_model)
-        handle_recommendations(resnet_model, feature_list, filenames)
+
+        if not st.session_state.detected_objects:
+            st.warning("⚠️ No objects detected. Please upload a picture with detectable furniture or decor.")
+        else:
+            handle_recommendations(resnet_model, feature_list, filenames)
 
 # Main function with enhanced UI
 def main():

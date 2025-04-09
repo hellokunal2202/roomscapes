@@ -188,7 +188,7 @@ def generate_packages(category_colors, df):
 
                 st.session_state.package_summary = package
                 st.success("✅ Packages generated! Redirecting...")
-                st.switch_page("pages/page_packages.py")
+                st.switch_page("pages/3_Packages.py")
     else:
         st.info("Select some categories to start customizing your plan.")
 
