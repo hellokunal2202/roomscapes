@@ -10,7 +10,7 @@ from modules.utils import get_dominant_colors
 from modules.config import PATHS
 from modules.color_util import categorize_color_family
 
-excluded_categories = {"Ceramic floor", "Wooden floor"}
+excluded_categories = {"Ceramic floor", "Wooden floor","Door","Window"}
 
 # Custom CSS with animations and modern styling
 def inject_custom_css():
@@ -269,7 +269,10 @@ def render_sidebar_controls():
             "Frame": "frame",
             "Table": "center-table",
             "Chair": "chair-wooden",
-            "Carpet":"handmade-carpets"
+            "Carpet":"handmade-carpets",
+            "wall-clock": "Wall Clock",
+            "Ceiling Light": "ceiling-light",
+            
         }
         
         # Combine selections from both sections
@@ -394,7 +397,7 @@ def display_image_columns(yolo_model):
                     st.error(f"Error extracting colors: {e}")
 
         if st.session_state.detected_results is None:
-            process_object_detection(yolo_model)
+            process_object_detection()
 
         with col_img2:
             if st.session_state.result_image:
@@ -408,44 +411,47 @@ def display_image_columns(yolo_model):
                 st.caption("Object detection pending or failed.")
 
         st.markdown("</div>", unsafe_allow_html=True)
+    
 
-def process_object_detection(yolo_model):
-    with st.spinner("🔮 Decrypting Your Room's Essence..."):
+def process_object_detection():
+    with st.spinner("🔮 Analyzing Your Room..."):
         try:
-            results = utils.detect_objects(
+            # run the multi‐weight inferencer
+            combined_bgr, detected_internal = utils.detect_objects(
                 st.session_state.uploaded_file_path,
-                yolo_model
+                weights_dir="assets/all_weights"
             )
-            st.session_state.detected_results = results 
-            img_with_boxes = results.plot() 
-            img_rgb = img_with_boxes[..., ::-1]
-            st.session_state.result_image = Image.fromarray(img_rgb)
+            # prepare for Streamlit
+            combined_rgb = combined_bgr[..., ::-1]  
+            st.session_state.result_image = Image.fromarray(combined_rgb)
 
-            detected_objects = set()
+            # mapping to display names
             object_display_mapping = { 
                 "sofa": "Sofa",
-                "curtains": "Curtains",
+                "couch": "Sofa",
+                "Sofa": "Sofa",
+                "curtain": "Curtains",
                 "wooden-floor": "Wooden Floor",
                 "floor-lamps": "Nightstand", 
                 "painting": "Painting",
                 "cabinet": "Cabinet",
                 "frame": "Frame",
                 "center-table": "Table",
-                "chair-wooden": "Chair"
+                "chair-wooden": "Chair",
+                "wall-clock": "Wall Clock",
+                "wall-painting":"Frame",
+                "tv-stand":"TV Stand",
+                "ceiling-light":"Ceiling Light",
             }
+            disp = { object_display_mapping.get(n,n) for n in detected_internal }
 
-            if results.boxes:
-                for box in results.boxes:
-                    internal_cls_name = results.names[int(box.cls.numpy()[0])]
-                    display_name = object_display_mapping.get(internal_cls_name, internal_cls_name)
-                    detected_objects.add(display_name)
-
-            st.session_state.detected_objects = detected_objects if detected_objects else set()
+            st.session_state.detected_objects = disp
 
         except Exception as e:
-             st.error(f"Object detection failed: {e}")
-             st.session_state.detected_results = None
-             st.session_state.result_image = None
+            st.error(f"Object detection failed: {e}")
+            st.session_state.result_image    = None
+            st.session_state.detected_objects = set()
+
 
 # Enhanced recommendations section
 def display_recommendations(filenames):
@@ -483,7 +489,7 @@ def handle_recommendations(resnet_model, feature_list, filenames):
     with col2:
         button_disabled = st.session_state.uploaded_file_path is None
         if enhanced_button("View Top Similar Rooms", key="find_similar", use_container_width=True, disabled=button_disabled):
-            with st.spinner(" Warping Through Design Space..."):
+            with st.spinner(" Finding Similar Design Spaces..."):
                 try:
                     features = utils.feature_extraction(
                         st.session_state.uploaded_file_path,
