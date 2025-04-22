@@ -11,6 +11,10 @@ from numpy.linalg import norm
 from colorthief import ColorThief
 import webcolors
 import io
+# utils.py
+import random
+import cv2
+from ultralytics import YOLO
 
 from .config import PATHS
 
@@ -42,9 +46,43 @@ def recommend(features, feature_list):
     distances, indices = neighbors.kneighbors([features])
     return indices[0]
 
-def detect_objects(image_path, model):
-    results = model.predict(image_path, conf=0.3)[0]
-    return results
+def detect_objects(image_path, weights_dir="assets/all_weights", conf=0.3):
+    """
+    Runs all YOLOv8 models in weights_dir on the image,
+    draws every box onto one combined BGR image, and
+    returns that image + the set of detected class names.
+    """
+    # load
+    orig = cv2.imread(image_path)
+    combined = orig.copy()
+
+    detected = set()
+    colors = {}
+
+    def get_color(cname):
+        if cname not in colors:
+            colors[cname] = tuple(random.randint(0,255) for _ in range(3))
+        return colors[cname]
+
+    # loop through all weights
+    for fname in os.listdir(weights_dir):
+        if not fname.endswith(".pt"):
+            continue
+        model = YOLO(os.path.join(weights_dir, fname))
+        res   = model.predict(image_path, conf=conf)[0]
+
+        for box in res.boxes:
+            cid   = int(box.cls[0])
+            cname = res.names[cid]
+            detected.add(cname)
+
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            col = get_color(cname)
+            cv2.rectangle(combined, (x1,y1),(x2,y2), col, 2)
+            cv2.putText(combined, cname, (x1, y1-10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, col, 2)
+
+    return combined, detected
 
 def get_recommended_objects(detected_img):
     try:
